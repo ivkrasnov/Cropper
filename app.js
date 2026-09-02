@@ -75,10 +75,29 @@ $('#cropTab').addEventListener('click', () => { $('#cropTab').classList.add('act
 $('#editTab').addEventListener('click', () => { $('#editTab').classList.add('active'); $('#cropTab').classList.remove('active'); $('#editControls').hidden = false; $('#cropControls').hidden = true; });
 
 function relativePoint(e) { const r = stage.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+function resizeLockedCrop(handle, point, ratio, old) {
+  const anchor = {
+    nw: { x: old.x + old.w, y: old.y + old.h }, ne: { x: old.x, y: old.y + old.h },
+    se: { x: old.x, y: old.y }, sw: { x: old.x + old.w, y: old.y }
+  }[handle];
+  const horizontal = handle.includes('w') ? anchor.x - point.x : point.x - anchor.x;
+  const vertical = handle.includes('n') ? anchor.y - point.y : point.y - anchor.y;
+  const requestedWidth = (ratio * ratio * horizontal + ratio * vertical) / (ratio * ratio + 1);
+  const maxWidth = {
+    nw: Math.min(anchor.x, anchor.y * ratio), ne: Math.min(1 - anchor.x, anchor.y * ratio),
+    se: Math.min(1 - anchor.x, (1 - anchor.y) * ratio), sw: Math.min(anchor.x, (1 - anchor.y) * ratio)
+  }[handle];
+  const width = Math.max(Math.min(.05, maxWidth), Math.min(maxWidth, requestedWidth));
+  const height = width / ratio;
+  if (handle === 'nw') return { x: anchor.x - width, y: anchor.y - height, w: width, h: height };
+  if (handle === 'ne') return { x: anchor.x, y: anchor.y - height, w: width, h: height };
+  if (handle === 'se') return { x: anchor.x, y: anchor.y, w: width, h: height };
+  return { x: anchor.x - width, y: anchor.y, w: width, h: height };
+}
 stage.addEventListener('pointerdown', (e) => { if (!state.image || !e.target.closest('.crop-box')) return; const p = relativePoint(e), b = getCanvasBounds(), handle = e.target.dataset.handle; state.drag = { handle, p, crop: { ...state.crop }, b }; stage.setPointerCapture(e.pointerId); });
 stage.addEventListener('pointermove', (e) => { if (!state.drag) return; const { p: start, crop: old, b, handle } = state.drag, now = relativePoint(e); const dx = (now.x - start.x) / b.w, dy = (now.y - start.y) / b.h; let c;
   if (!handle) c = { ...old, x: Math.max(0, Math.min(1 - old.w, old.x + dx)), y: Math.max(0, Math.min(1 - old.h, old.y + dy)) };
-  else { let x=old.x,y=old.y,w=old.w,h=old.h; if(handle.includes('e')) w=Math.max(.05,Math.min(1-x,old.w+dx)); if(handle.includes('s')) h=Math.max(.05,Math.min(1-y,old.h+dy)); if(handle.includes('w')) { x=Math.max(0,Math.min(old.x+old.w-.05,old.x+dx)); w=old.w+(old.x-x); } if(handle.includes('n')) { y=Math.max(0,Math.min(old.y+old.h-.05,old.y+dy)); h=old.h+(old.y-y); } c={x,y,w,h}; const r=ratioNumber(); if(r){ if(handle.includes('e')||handle.includes('w')) h=w/r; else w=h*r; if(handle.includes('w')) x=old.x+old.w-w; if(handle.includes('n')) y=old.y+old.h-h; c.x=Math.max(0,Math.min(1-c.w,c.x));c.y=Math.max(0,Math.min(1-c.h,c.y)); } } state.crop=c; updateCropUI(); });
+  else { const ratio = ratioNumber(); if (ratio) c = resizeLockedCrop(handle, { x: (now.x - b.x) / b.w, y: (now.y - b.y) / b.h }, ratio, old); else { let x=old.x,y=old.y,w=old.w,h=old.h; if(handle.includes('e')) w=Math.max(.05,Math.min(1-x,old.w+dx)); if(handle.includes('s')) h=Math.max(.05,Math.min(1-y,old.h+dy)); if(handle.includes('w')) { x=Math.max(0,Math.min(old.x+old.w-.05,old.x+dx)); w=old.w+(old.x-x); } if(handle.includes('n')) { y=Math.max(0,Math.min(old.y+old.h-.05,old.y+dy)); h=old.h+(old.y-y); } c={x,y,w,h}; } } state.crop=c; updateCropUI(); });
 stage.addEventListener('pointerup', () => { state.drag = null; });
 $('.levels-range').addEventListener('input', () => { state.adjustments.black = +$('#blackPoint').value; state.adjustments.gamma = +$('#gamma').value; state.adjustments.white = +$('#whitePoint').value; if (state.adjustments.white <= state.adjustments.black) $('#whitePoint').value = state.adjustments.white = Math.min(255,state.adjustments.black+1); $('#levelsValue').textContent = `${state.adjustments.black} · ${(state.adjustments.gamma/100).toFixed(2).replace('.', ',')} · ${state.adjustments.white}`; render(); });
 $('#resetAdjustments').addEventListener('click', () => { state.adjustments = { ...defaults }; adjustments.forEach(([key]) => { $(`#${key}`).value=0; $(`#${key}Value`).textContent='0'; }); $('#blackPoint').value=0;$('#gamma').value=100;$('#whitePoint').value=255;$('#levelsValue').textContent='0 · 1,00 · 255';render(); });
