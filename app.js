@@ -52,8 +52,13 @@ function updateCropUI() {
   Object.assign(shade.style, { left: `${b.x}px`, top: `${b.y}px`, width: `${b.w}px`, height: `${b.h}px`, '--x': `${c.x * 100}%`, '--y': `${c.y * 100}%`, '--w': `${c.w * 100}%`, '--h': `${c.h * 100}%` });
 }
 function ratioNumber() { if (state.ratio === 'free') return null; const [a,b] = state.ratio.split(':').map(Number); return b ? a / b : a; }
+function cropSpaceRatio() {
+  const ratio = ratioNumber();
+  if (!ratio || !state.image) return ratio;
+  return ratio / (state.image.naturalWidth / state.image.naturalHeight);
+}
 function applyRatio(centerX = .5, centerY = .5) {
-  const r = ratioNumber(); if (!r) return; let { w, h } = state.crop; if (w / h > r) w = h * r; else h = w / r; if (w > 1) { w = 1; h = 1 / r; } if (h > 1) { h = 1; w = r; }
+  const r = cropSpaceRatio(); if (!r) return; const w = Math.min(1, r), h = Math.min(1, 1 / r);
   state.crop = { x: Math.max(0, Math.min(1 - w, centerX - w / 2)), y: Math.max(0, Math.min(1 - h, centerY - h / 2)), w, h };
 }
 function resetCrop() { const aspect = state.image.naturalWidth / state.image.naturalHeight; state.crop = aspect > 1 ? { x: .08, y: .08, w: .84, h: .84 } : { x: .08, y: .08, w: .84, h: .84 }; applyRatio(); updateCropUI(); }
@@ -97,7 +102,7 @@ function resizeLockedCrop(handle, point, ratio, old) {
 stage.addEventListener('pointerdown', (e) => { if (!state.image || !e.target.closest('.crop-box')) return; const p = relativePoint(e), b = getCanvasBounds(), handle = e.target.dataset.handle; state.drag = { handle, p, crop: { ...state.crop }, b }; stage.setPointerCapture(e.pointerId); });
 stage.addEventListener('pointermove', (e) => { if (!state.drag) return; const { p: start, crop: old, b, handle } = state.drag, now = relativePoint(e); const dx = (now.x - start.x) / b.w, dy = (now.y - start.y) / b.h; let c;
   if (!handle) c = { ...old, x: Math.max(0, Math.min(1 - old.w, old.x + dx)), y: Math.max(0, Math.min(1 - old.h, old.y + dy)) };
-  else { const ratio = ratioNumber(); if (ratio) c = resizeLockedCrop(handle, { x: (now.x - b.x) / b.w, y: (now.y - b.y) / b.h }, ratio, old); else { let x=old.x,y=old.y,w=old.w,h=old.h; if(handle.includes('e')) w=Math.max(.05,Math.min(1-x,old.w+dx)); if(handle.includes('s')) h=Math.max(.05,Math.min(1-y,old.h+dy)); if(handle.includes('w')) { x=Math.max(0,Math.min(old.x+old.w-.05,old.x+dx)); w=old.w+(old.x-x); } if(handle.includes('n')) { y=Math.max(0,Math.min(old.y+old.h-.05,old.y+dy)); h=old.h+(old.y-y); } c={x,y,w,h}; } } state.crop=c; updateCropUI(); });
+  else { const ratio = cropSpaceRatio(); if (ratio) c = resizeLockedCrop(handle, { x: (now.x - b.x) / b.w, y: (now.y - b.y) / b.h }, ratio, old); else { let x=old.x,y=old.y,w=old.w,h=old.h; if(handle.includes('e')) w=Math.max(.05,Math.min(1-x,old.w+dx)); if(handle.includes('s')) h=Math.max(.05,Math.min(1-y,old.h+dy)); if(handle.includes('w')) { x=Math.max(0,Math.min(old.x+old.w-.05,old.x+dx)); w=old.w+(old.x-x); } if(handle.includes('n')) { y=Math.max(0,Math.min(old.y+old.h-.05,old.y+dy)); h=old.h+(old.y-y); } c={x,y,w,h}; } } state.crop=c; updateCropUI(); });
 stage.addEventListener('pointerup', () => { state.drag = null; });
 $('.levels-range').addEventListener('input', () => { state.adjustments.black = +$('#blackPoint').value; state.adjustments.gamma = +$('#gamma').value; state.adjustments.white = +$('#whitePoint').value; if (state.adjustments.white <= state.adjustments.black) $('#whitePoint').value = state.adjustments.white = Math.min(255,state.adjustments.black+1); $('#levelsValue').textContent = `${state.adjustments.black} · ${(state.adjustments.gamma/100).toFixed(2).replace('.', ',')} · ${state.adjustments.white}`; render(); });
 $('#resetAdjustments').addEventListener('click', () => { state.adjustments = { ...defaults }; adjustments.forEach(([key]) => { $(`#${key}`).value=0; $(`#${key}Value`).textContent='0'; }); $('#blackPoint').value=0;$('#gamma').value=100;$('#whitePoint').value=255;$('#levelsValue').textContent='0 · 1,00 · 255';render(); });
