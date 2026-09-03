@@ -6,6 +6,7 @@
   --quiet: #9e9e94;
   --line: #d2d2c6;
   --button: #e9e8e2;
+  --crop-overlay: rgba(255, 255, 255, .6);
   --screen-x: 5vw;
   --screen-y: 5vh;
   --font: "Inter", Arial, sans-serif;
@@ -149,7 +150,7 @@ button { cursor: pointer; }
   position: absolute;
   z-index: var(--z-crop);
   border: 1px solid rgba(255, 255, 255, .96);
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, .54);
+  box-shadow: 0 0 0 9999px var(--crop-overlay);
   cursor: move;
 }
 
