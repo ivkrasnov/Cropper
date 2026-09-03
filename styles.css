@@ -8,8 +8,7 @@
   --button: #e9e8e2;
   --screen-x: 5vw;
   --screen-y: 5vh;
-  --mono: "Roboto Mono", "DM Mono", monospace;
-  --sans: "Manrope", Arial, sans-serif;
+  --font: "Inter", Arial, sans-serif;
   --ease-out: cubic-bezier(.22, 1, .36, 1);
   --z-dropdown: 20;
   --z-crop: 10;
@@ -18,8 +17,8 @@
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html, body { min-width: 320px; min-height: 100%; }
-body { margin: 0; background: var(--white); color: var(--ink); font-family: var(--sans); }
+html, body { min-width: 320px; min-height: 100%; font-family: var(--font); }
+body { margin: 0; background: var(--white); color: var(--ink); font-family: var(--font); }
 button, input { font: inherit; }
 button { cursor: pointer; }
 
@@ -82,7 +81,7 @@ button { cursor: pointer; }
 .dropzone input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .upload-icon { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--ink); margin-bottom: 3px; font-size: 19px; }
 .dropzone strong { color: var(--ink); font-size: 13px; font-weight: 600; }
-.dropzone span:last-child { font: 10px var(--mono); }
+.dropzone span:last-child { font: 500 10px var(--font); }
 
 .editor-view {
   flex: 1 1 0;
@@ -121,8 +120,8 @@ button { cursor: pointer; }
   min-height: 20px;
   margin-bottom: 5px;
   color: var(--quiet);
-  font: 500 14px/20px var(--mono);
-  letter-spacing: -1px;
+  font: 500 14px/20px var(--font);
+  font-variant-numeric: tabular-nums;
 }
 
 .photo-viewport {
@@ -186,8 +185,8 @@ button { cursor: pointer; }
   border: 0;
   background: transparent;
   color: var(--quiet);
-  font: 500 14px/20px var(--mono);
-  letter-spacing: -1px;
+  font: 500 14px/20px var(--font);
+  font-variant-numeric: tabular-nums;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -222,7 +221,7 @@ button { cursor: pointer; }
   border: 0;
   background: transparent;
   color: var(--muted);
-  font: 500 12px/18px var(--mono);
+  font: 500 12px/18px var(--font);
   text-align: left;
   display: flex;
   align-items: center;
@@ -247,8 +246,7 @@ button { cursor: pointer; }
   border-radius: 16px;
   background: var(--button);
   color: var(--muted);
-  font: 500 14px/20px var(--mono);
-  letter-spacing: -1px;
+  font: 500 14px/20px var(--font);
   text-transform: uppercase;
   transition: color 180ms ease, background-color 180ms ease, transform 180ms var(--ease-out);
 }
@@ -276,7 +274,7 @@ button { cursor: pointer; }
 .new-photo-icons { position: relative; display: block; width: 48px; height: 48px; }
 .new-photo-icons img { position: absolute; inset: 0; width: 48px; height: 48px; transition: opacity 160ms ease; }
 .new-photo-icon-hover { opacity: 0; }
-.new-photo-label { margin-top: 4px; opacity: 0; font: 500 14px/16px var(--mono); letter-spacing: -1px; text-align: center; transition: opacity 160ms ease, transform 180ms var(--ease-out); transform: translateY(-3px); }
+.new-photo-label { margin-top: 4px; opacity: 0; font: 500 14px/16px var(--font); text-align: center; transition: opacity 160ms ease, transform 180ms var(--ease-out); transform: translateY(-3px); }
 .new-photo-button:hover .new-photo-icon-default,
 .new-photo-button:focus-visible .new-photo-icon-default { opacity: 0; }
 .new-photo-button:hover .new-photo-icon-hover,
