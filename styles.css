@@ -6,7 +6,7 @@
   --quiet: #9e9e94;
   --line: #d2d2c6;
   --button: #e9e8e2;
-  --crop-overlay: rgba(255, 255, 255, .9);
+  --crop-overlay: rgba(255, 255, 255, .8);
   --screen-x: 5vw;
   --screen-y: 5vh;
   --font: "Inter", Arial, sans-serif;
