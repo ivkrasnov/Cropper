@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="add_photo_alternate">
+    <mask id="mask0_0_12" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect id="Bounding box" width="48" height="48" fill="#D2D2C6"/></mask>
+    <g mask="url(#mask0_0_12)"><path id="add_photo_alternate_2" d="M9 42C8.2 42 7.5 41.7 6.9 41.1C6.3 40.5 6 39.8 6 39V9C6 8.2 6.3 7.5 6.9 6.9C7.5 6.3 8.2 6 9 6H27.25V9H9V39H39V20.75H42V39C42 39.8 41.7 40.5 41.1 41.1C40.5 41.7 39.8 42 39 42H9ZM12 33.9H36L28.8 24.3L22.45 32.65L17.75 26.45L12 33.9ZM34.65 17.75V13.4H30.25V10.4H34.65V6H37.65V10.4H42V13.4H37.65V17.75H34.65Z" fill="#9E9E94"/></g>
+  </g>
+</svg>

@@ -4,88 +4,107 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cropper — обрезка фотографий</title>
-    <meta name="theme-color" content="#f4f4f0" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=Manrope:wght@400;500;600;700&amp;family=Roboto+Mono:wght@500&amp;display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
         <a class="brand" href="./" aria-label="Cropper — на главную"><span class="brand-mark">✣</span>Cropper</a>
-        <div id="imageMeta" class="image-meta" hidden></div>
-        <button id="newPhoto" class="text-button" type="button" hidden>Новая фотография</button>
         <p class="tagline">let’s crop</p>
       </header>
 
       <section id="uploadView" class="upload-view">
         <label class="dropzone" id="dropzone" for="fileInput">
           <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp" />
-          <span class="upload-icon">↑</span>
+          <span class="upload-icon" aria-hidden="true">↑</span>
           <strong>Загрузите фотографию</strong>
           <span>JPEG, PNG или WEBP</span>
         </label>
       </section>
 
       <section id="editorView" class="editor-view" hidden>
-        <div class="workspace">
-          <div class="canvas-stage" id="canvasStage">
-            <canvas id="previewCanvas" aria-label="Предпросмотр и область кадрирования"></canvas>
-            <div id="cropBox" class="crop-box" aria-label="Область кадрирования">
-              <span class="crop-handle handle-nw" data-handle="nw"></span><span class="crop-handle handle-ne" data-handle="ne"></span>
-              <span class="crop-handle handle-se" data-handle="se"></span><span class="crop-handle handle-sw" data-handle="sw"></span>
-              <span class="crop-guides"></span>
+        <div class="editor-surface">
+          <div class="photo-layout">
+            <div id="imageMeta" class="image-meta photo-aligned"></div>
+
+            <div id="photoViewport" class="photo-viewport">
+              <div class="canvas-stage" id="canvasStage">
+                <canvas id="previewCanvas" aria-label="Предпросмотр и область кадрирования"></canvas>
+                <div id="cropBox" class="crop-box" aria-label="Область кадрирования">
+                  <span class="crop-handle handle-nw" data-handle="nw"></span>
+                  <span class="crop-handle handle-ne" data-handle="ne"></span>
+                  <span class="crop-handle handle-se" data-handle="se"></span>
+                  <span class="crop-handle handle-sw" data-handle="sw"></span>
+                  <span class="crop-guides"></span>
+                </div>
+                <div id="cropShade" class="crop-shade" aria-hidden="true"></div>
+              </div>
             </div>
-            <div id="cropShade" class="crop-shade" aria-hidden="true"></div>
+
+            <div class="photo-controls photo-aligned">
+              <div class="select-control" id="ratioSelect">
+                <button id="ratioMenuToggle" class="select-trigger" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="ratioGrid">
+                  <span id="ratioValue">16 × 9</span>
+                  <img src="./assets/arrow-down.svg" alt="" />
+                </button>
+                <div class="select-menu" id="ratioGrid" role="menu" hidden>
+                  <button class="ratio" data-ratio="free" type="button" role="menuitem">Свободно</button>
+                  <button class="ratio" data-ratio="1" type="button" role="menuitem">1 × 1</button>
+                  <button class="ratio" data-ratio="4:5" type="button" role="menuitem">4 × 5</button>
+                  <button class="ratio" data-ratio="5:4" type="button" role="menuitem">5 × 4</button>
+                  <button class="ratio" data-ratio="3:4" type="button" role="menuitem">3 × 4</button>
+                  <button class="ratio" data-ratio="4:3" type="button" role="menuitem">4 × 3</button>
+                  <button class="ratio" data-ratio="3:2" type="button" role="menuitem">3 × 2</button>
+                  <button class="ratio" data-ratio="2:3" type="button" role="menuitem">2 × 3</button>
+                  <button class="ratio active" data-ratio="16:9" type="button" role="menuitem">16 × 9</button>
+                  <button class="ratio" data-ratio="9:16" type="button" role="menuitem">9 × 16</button>
+                </div>
+              </div>
+
+              <div class="select-control size-control" id="sizeSelect">
+                <button id="sizeMenuToggle" class="select-trigger" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="sizeMenu">
+                  <span id="sizeValue">M • 1400 px</span>
+                  <img src="./assets/arrow-down.svg" alt="" />
+                </button>
+                <div class="select-menu" id="sizeMenu" role="menu" hidden>
+                  <button class="size" type="button" data-size="1000" role="menuitem">S <small>1000 px</small></button>
+                  <button class="size active" type="button" data-size="1400" role="menuitem">M <small>1400 px</small></button>
+                  <button class="size" type="button" data-size="2500" role="menuitem">L <small>2500 px</small></button>
+                </div>
+              </div>
+            </div>
+
+            <button id="download" class="download-button" type="button">Скачать фото</button>
           </div>
 
-          <aside class="tools-panel">
-            <div class="panel-tabs" role="tablist">
-              <button class="panel-tab active" id="cropTab" type="button" role="tab" aria-selected="true">Кадр</button>
-              <button class="panel-tab" id="editTab" type="button" role="tab" aria-selected="false">Правка</button>
-            </div>
-
-            <div id="cropControls" class="tool-content">
-              <p class="tool-label">Соотношение сторон</p>
-              <div class="ratio-grid" id="ratioGrid">
-                <button class="ratio active" data-ratio="free" type="button">Свободно</button>
-                <button class="ratio" data-ratio="1" type="button">1:1</button>
-                <button class="ratio" data-ratio="4:5" type="button">4:5</button>
-                <button class="ratio" data-ratio="5:4" type="button">5:4</button>
-                <button class="ratio" data-ratio="3:4" type="button">3:4</button>
-                <button class="ratio" data-ratio="4:3" type="button">4:3</button>
-                <button class="ratio" data-ratio="3:2" type="button">3:2</button>
-                <button class="ratio" data-ratio="2:3" type="button">2:3</button>
-                <button class="ratio" data-ratio="16:9" type="button">16:9</button>
-                <button class="ratio" data-ratio="9:16" type="button">9:16</button>
-              </div>
-              <div class="tool-divider"></div>
-              <p class="tool-label">Кадр</p>
-              <p class="hint">Перетаскивайте рамку или её углы. Исходное разрешение сохраняется до экспорта.</p>
-              <button id="resetCrop" class="ghost-button" type="button">Сбросить кадр</button>
-            </div>
-
-            <div id="editControls" class="tool-content" hidden>
-              <div class="adjustment-list" id="adjustmentList"></div>
-              <div class="tool-divider"></div>
-              <div class="levels-header"><p class="tool-label">Levels</p><output id="levelsValue">0 · 1,00 · 255</output></div>
-              <div class="histogram" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-              <div class="levels-range"><input id="blackPoint" type="range" min="0" max="80" value="0" aria-label="Чёрная точка" /><input id="gamma" type="range" min="50" max="200" value="100" aria-label="Гамма" /><input id="whitePoint" type="range" min="175" max="255" value="255" aria-label="Белая точка" /></div>
-              <button id="resetAdjustments" class="ghost-button" type="button">Сбросить правки</button>
-            </div>
-          </aside>
+          <button id="newPhoto" class="new-photo-button" type="button" aria-label="Загрузить новую фотографию">
+            <span class="new-photo-icons" aria-hidden="true">
+              <img class="new-photo-icon-default" src="./assets/new-photo.svg" alt="" />
+              <img class="new-photo-icon-hover" src="./assets/new-photo-hover.svg" alt="" />
+            </span>
+            <span class="new-photo-label">Новое<br />фото</span>
+          </button>
         </div>
 
-        <footer class="export-bar">
-          <div class="export-copy"><span>Экспорт</span><small>JPEG · максимальная сторона</small></div>
-          <div class="size-switch" role="group" aria-label="Размер экспорта">
-            <button class="size active" type="button" data-size="1000">S <small>1000 px</small></button>
-            <button class="size" type="button" data-size="1400">M <small>1400 px</small></button>
-            <button class="size" type="button" data-size="2500">L <small>2500 px</small></button>
+        <div class="legacy-controls" hidden>
+          <button id="cropTab" type="button">Кадр</button>
+          <button id="editTab" type="button">Правка</button>
+          <div id="cropControls"><button id="resetCrop" type="button">Сбросить кадр</button></div>
+          <div id="editControls" hidden>
+            <div id="adjustmentList"></div>
+            <output id="levelsValue">0 · 1,00 · 255</output>
+            <div class="levels-range">
+              <input id="blackPoint" type="range" min="0" max="80" value="0" aria-label="Чёрная точка" />
+              <input id="gamma" type="range" min="50" max="200" value="100" aria-label="Гамма" />
+              <input id="whitePoint" type="range" min="175" max="255" value="255" aria-label="Белая точка" />
+            </div>
+            <button id="resetAdjustments" type="button">Сбросить правки</button>
           </div>
-          <button id="download" class="download-button" type="button"><span>Скачать JPEG</span><span class="download-arrow">↓</span></button>
-        </footer>
+        </div>
       </section>
     </main>
     <div id="toast" role="status" aria-live="polite"></div>

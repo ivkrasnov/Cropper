@@ -2,12 +2,13 @@ const $ = (selector) => document.querySelector(selector);
 const canvas = $('#previewCanvas');
 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 const stage = $('#canvasStage');
+const photoViewport = $('#photoViewport');
 const cropBox = $('#cropBox');
 const shade = $('#cropShade');
 const toast = $('#toast');
 
 const defaults = { temperature: 0, tint: 0, vibrance: 0, saturation: 0, clarity: 0, dehaze: 0, black: 0, gamma: 100, white: 255 };
-const state = { image: null, fileName: 'cropper', crop: { x: .08, y: .08, w: .84, h: .84 }, ratio: 'free', outputSize: 1000, adjustments: { ...defaults }, drag: null };
+const state = { image: null, fileName: 'cropper', crop: { x: .08, y: .08, w: .84, h: .84 }, ratio: '16:9', outputSize: 1400, adjustments: { ...defaults }, drag: null };
 const adjustments = [
   ['temperature', 'Temperature', -100, 100], ['tint', 'Tint', -100, 100], ['vibrance', 'Vibrance', -100, 100],
   ['saturation', 'Saturation', -100, 100], ['clarity', 'Clarity', -100, 100], ['dehaze', 'Dehaze', -100, 100]
@@ -40,11 +41,15 @@ function drawImage(targetCtx, outW, outH, useCrop = true) {
 }
 function render() {
   if (!state.image) return;
-  const rect = stage.getBoundingClientRect(); const aspect = state.image.naturalWidth / state.image.naturalHeight;
+  const rect = photoViewport.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+  const aspect = state.image.naturalWidth / state.image.naturalHeight;
   let w = Math.min(rect.width, rect.height * aspect), h = w / aspect; if (h > rect.height) { h = rect.height; w = h * aspect; }
+  Object.assign(stage.style, { width: `${w}px`, height: `${h}px` });
+  $$('.photo-aligned').forEach((element) => { element.style.width = `${w}px`; });
   const scale = Math.min(1, 1600 / Math.max(state.image.naturalWidth, state.image.naturalHeight));
   canvas.width = Math.max(1, Math.round(state.image.naturalWidth * scale)); canvas.height = Math.max(1, Math.round(state.image.naturalHeight * scale));
-  canvas.style.width = `${w}px`; canvas.style.height = `${h}px`; drawImage(ctx, canvas.width, canvas.height, false); updateCropUI();
+  drawImage(ctx, canvas.width, canvas.height, false); updateCropUI();
 }
 function updateCropUI() {
   const b = getCanvasBounds(), c = state.crop; const x = b.x + b.w * c.x, y = b.y + b.h * c.y, w = b.w * c.w, h = b.h * c.h;
@@ -64,16 +69,70 @@ function applyRatio(centerX = .5, centerY = .5) {
 function resetCrop() { const aspect = state.image.naturalWidth / state.image.naturalHeight; state.crop = aspect > 1 ? { x: .08, y: .08, w: .84, h: .84 } : { x: .08, y: .08, w: .84, h: .84 }; applyRatio(); updateCropUI(); }
 function setToast(message) { toast.textContent = message; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2400); }
 
+function revealEditor() {
+  const update = () => {
+    $('#uploadView').hidden = true;
+    $('#editorView').hidden = false;
+    render();
+  };
+  if (document.startViewTransition) {
+    document.startViewTransition(update);
+    return;
+  }
+  update();
+  $('#editorView').classList.add('fallback-enter');
+  setTimeout(() => $('#editorView').classList.remove('fallback-enter'), 280);
+}
+
 async function loadFile(file) {
   if (!file || !['image/jpeg','image/png','image/webp'].includes(file.type)) return setToast('Выберите JPEG, PNG или WEBP');
-  const url = URL.createObjectURL(file); const img = new Image(); img.onload = () => { state.image = img; state.fileName = file.name.replace(/\.[^/.]+$/, '') || 'cropper'; $('#uploadView').hidden = true; $('#editorView').hidden = false; $('#newPhoto').hidden = false; $('#imageMeta').hidden = false; $('#imageMeta').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`; resetCrop(); requestAnimationFrame(render); URL.revokeObjectURL(url); }; img.src = url;
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = async () => {
+    const firstPhoto = $('#editorView').hidden;
+    state.image = img;
+    state.fileName = file.name.replace(/\.[^/.]+$/, '') || 'cropper';
+    $('#imageMeta').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+    resetCrop();
+    if (firstPhoto) revealEditor(); else requestAnimationFrame(render);
+    URL.revokeObjectURL(url);
+  };
+  img.src = url;
 }
 $('#fileInput').addEventListener('change', (e) => loadFile(e.target.files[0]));
 ['dragenter','dragover'].forEach((name) => $('#dropzone').addEventListener(name, (e) => { e.preventDefault(); $('#dropzone').classList.add('dragging'); }));
 ['dragleave','drop'].forEach((name) => $('#dropzone').addEventListener(name, (e) => { e.preventDefault(); $('#dropzone').classList.remove('dragging'); }));
 $('#dropzone').addEventListener('drop', (e) => loadFile(e.dataTransfer.files[0]));
 $('#newPhoto').addEventListener('click', () => { $('#fileInput').value = ''; $('#fileInput').click(); });
-$('#ratioGrid').addEventListener('click', (e) => { const button = e.target.closest('button'); if (!button) return; state.ratio = button.dataset.ratio; $$('.ratio').forEach((b) => b.classList.toggle('active', b === button)); applyRatio(state.crop.x + state.crop.w / 2, state.crop.y + state.crop.h / 2); updateCropUI(); });
+function setMenuOpen(toggle, menu, open) {
+  toggle.setAttribute('aria-expanded', String(open));
+  menu.hidden = !open;
+}
+function closeMenus(except) {
+  [['#ratioMenuToggle', '#ratioGrid'], ['#sizeMenuToggle', '#sizeMenu']].forEach(([toggleSelector, menuSelector]) => {
+    const toggle = $(toggleSelector), menu = $(menuSelector);
+    if (menu !== except) setMenuOpen(toggle, menu, false);
+  });
+}
+function toggleMenu(toggle, menu) {
+  const open = menu.hidden;
+  closeMenus(menu);
+  setMenuOpen(toggle, menu, open);
+  if (open) menu.querySelector('.active')?.focus({ preventScroll: true });
+}
+
+$('#ratioMenuToggle').addEventListener('click', () => toggleMenu($('#ratioMenuToggle'), $('#ratioGrid')));
+$('#sizeMenuToggle').addEventListener('click', () => toggleMenu($('#sizeMenuToggle'), $('#sizeMenu')));
+$('#ratioGrid').addEventListener('click', (e) => {
+  const button = e.target.closest('button');
+  if (!button) return;
+  state.ratio = button.dataset.ratio;
+  $$('.ratio').forEach((item) => item.classList.toggle('active', item === button));
+  $('#ratioValue').textContent = button.textContent.trim();
+  setMenuOpen($('#ratioMenuToggle'), $('#ratioGrid'), false);
+  applyRatio(state.crop.x + state.crop.w / 2, state.crop.y + state.crop.h / 2);
+  updateCropUI();
+});
 function $$(s) { return document.querySelectorAll(s); }
 $('#resetCrop').addEventListener('click', resetCrop);
 $('#cropTab').addEventListener('click', () => { $('#cropTab').classList.add('active'); $('#editTab').classList.remove('active'); $('#cropControls').hidden = false; $('#editControls').hidden = true; });
@@ -106,7 +165,21 @@ stage.addEventListener('pointermove', (e) => { if (!state.drag) return; const { 
 stage.addEventListener('pointerup', () => { state.drag = null; });
 $('.levels-range').addEventListener('input', () => { state.adjustments.black = +$('#blackPoint').value; state.adjustments.gamma = +$('#gamma').value; state.adjustments.white = +$('#whitePoint').value; if (state.adjustments.white <= state.adjustments.black) $('#whitePoint').value = state.adjustments.white = Math.min(255,state.adjustments.black+1); $('#levelsValue').textContent = `${state.adjustments.black} · ${(state.adjustments.gamma/100).toFixed(2).replace('.', ',')} · ${state.adjustments.white}`; render(); });
 $('#resetAdjustments').addEventListener('click', () => { state.adjustments = { ...defaults }; adjustments.forEach(([key]) => { $(`#${key}`).value=0; $(`#${key}Value`).textContent='0'; }); $('#blackPoint').value=0;$('#gamma').value=100;$('#whitePoint').value=255;$('#levelsValue').textContent='0 · 1,00 · 255';render(); });
-$$('.size').forEach((button) => button.addEventListener('click', () => { state.outputSize = +button.dataset.size; $$('.size').forEach((b)=>b.classList.toggle('active',b===button)); }));
+$$('.size').forEach((button) => button.addEventListener('click', () => {
+  state.outputSize = +button.dataset.size;
+  $$('.size').forEach((item) => item.classList.toggle('active', item === button));
+  $('#sizeValue').textContent = `${button.childNodes[0].textContent.trim()} • ${button.dataset.size} px`;
+  setMenuOpen($('#sizeMenuToggle'), $('#sizeMenu'), false);
+}));
 $('#download').addEventListener('click', () => { if (!state.image) return; const s = sourceRect(), ratio = s.w / s.h; let w = state.outputSize, h = Math.round(w / ratio); if (h > state.outputSize) { h = state.outputSize; w = Math.round(h * ratio); } const out = document.createElement('canvas'); out.width=w;out.height=h;drawImage(out.getContext('2d',{willReadFrequently:true}),w,h); out.toBlob((blob) => { const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${state.fileName}-${state.outputSize}.jpg`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);setToast('JPEG готов к скачиванию'); },'image/jpeg',.92); });
+document.addEventListener('click', (event) => {
+  if (!event.target.closest('.select-control')) closeMenus();
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  closeMenus();
+  $('#ratioMenuToggle').blur();
+  $('#sizeMenuToggle').blur();
+});
 window.addEventListener('resize', () => state.image && render());
 createAdjustments();
