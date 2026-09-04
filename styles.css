@@ -349,7 +349,7 @@ button { cursor: pointer; }
     flex: 0 0 auto;
   }
 
-  .photo-header { min-height: 20px; margin-bottom: 16px; }
+  .photo-header { min-height: 20px; margin-bottom: 10.5px; }
   .photo-header .new-photo-action,
   .photo-controls { display: none; }
 
@@ -362,15 +362,17 @@ button { cursor: pointer; }
 
   .tablet-panel {
     width: 100%;
-    margin-top: 86px;
-    padding-bottom: 211px;
-    display: block;
+    margin-top: 36px;
+    padding-bottom: 268px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
   }
 
   .tablet-setting {
     width: 100%;
     display: grid;
-    grid-template-columns: 272px minmax(0, 1fr);
+    grid-template-columns: minmax(160px, 1fr) minmax(0, 514px);
     column-gap: 16px;
     align-items: start;
   }
@@ -388,7 +390,7 @@ button { cursor: pointer; }
   }
 
   .tablet-ratio-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .tablet-size-setting { margin-top: 36px; }
+  .tablet-size-setting { margin-top: 0; }
   .tablet-size-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
   .tablet-option {
@@ -413,20 +415,24 @@ button { cursor: pointer; }
   .tablet-actions {
     position: fixed;
     z-index: var(--z-dropdown);
-    right: 16px;
-    bottom: 16px;
-    left: 16px;
+    right: 0;
+    bottom: 0;
+    left: 0;
     width: auto;
-    height: 120px;
+    height: 152px;
     margin-top: 0;
-    background: var(--white);
+    padding: 16px;
+    background: rgba(255, 255, 255, .5);
     display: flex;
+    align-items: center;
+    justify-content: center;
     gap: 16px;
   }
 
   .tablet-action {
     flex: 1 1 0;
     min-width: 0;
+    height: 120px;
     padding: 20px 24px;
     border: 0;
     background: #f3f3f2;
