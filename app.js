@@ -167,7 +167,7 @@ $('#editTab').addEventListener('click', () => { $('#editTab').classList.add('act
 
 function relativePoint(e) { const r = stage.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
 function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
-function mobilePinchEnabled(e) { return e.pointerType === 'touch' && window.matchMedia('(max-width: 620px)').matches; }
+function touchPinchEnabled(e) { return e.pointerType === 'touch' && window.matchMedia('(max-width: 1024px)').matches; }
 function pinchMetrics() {
   const [first, second] = [...state.pointers.values()];
   if (!first || !second) return null;
@@ -236,7 +236,7 @@ function resizeLockedCrop(handle, point, ratio, old) {
 stage.addEventListener('pointerdown', (e) => {
   if (!state.image) return;
   const point = relativePoint(e);
-  if (mobilePinchEnabled(e)) {
+  if (touchPinchEnabled(e)) {
     if (state.pointers.size < 2) state.pointers.set(e.pointerId, point);
     if (state.pointers.has(e.pointerId)) stage.setPointerCapture(e.pointerId);
     if (state.pointers.size === 2) startPinch();
@@ -247,7 +247,7 @@ stage.addEventListener('pointerdown', (e) => {
   stage.setPointerCapture(e.pointerId);
 });
 stage.addEventListener('pointermove', (e) => {
-  if (mobilePinchEnabled(e) && state.pointers.has(e.pointerId)) {
+  if (touchPinchEnabled(e) && state.pointers.has(e.pointerId)) {
     state.pointers.set(e.pointerId, relativePoint(e));
     if (state.pinch) { updatePinch(); return; }
   }
