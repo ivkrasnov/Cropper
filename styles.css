@@ -208,9 +208,12 @@ button { cursor: pointer; }
   gap: 4px;
 }
 
-.select-trigger img { width: 20px; height: 20px; transition: transform 180ms var(--ease-out); }
+.select-trigger img { width: 20px; height: 20px; transition: transform 180ms var(--ease-out), filter 180ms ease; }
 .select-trigger[aria-expanded="true"] img { transform: rotate(180deg); }
-.select-trigger:hover { color: var(--ink); }
+.select-trigger:hover,
+.select-trigger:focus-visible { color: var(--ink); }
+.select-trigger:hover img,
+.select-trigger:focus-visible img { filter: brightness(0); }
 .select-trigger:focus-visible,
 .toolbar-action:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
@@ -263,8 +266,11 @@ button { cursor: pointer; }
   transition: color 180ms ease;
 }
 
-.toolbar-action img { width: 20px; height: 20px; }
-.toolbar-action:hover { color: var(--ink); }
+.toolbar-action img { width: 20px; height: 20px; transition: filter 180ms ease; }
+.toolbar-action:hover,
+.toolbar-action:focus-visible { color: var(--ink); }
+.toolbar-action:hover img,
+.toolbar-action:focus-visible img { filter: brightness(0); }
 
 #toast {
   position: fixed;
