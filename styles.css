@@ -333,18 +333,18 @@ button { cursor: pointer; }
 @media (min-width: 621px) and (max-width: 1024px) {
   :root {
     --screen-x: 16px;
-    --screen-y: 40px;
+    --screen-y: 24px;
   }
 
   .app-shell { padding-bottom: 0; }
   .topbar { min-height: 29px; }
-  .editor-view { flex: 0 0 auto; padding-top: 8px; }
+  .editor-view { flex: 0 0 auto; padding-top: 12px; }
   .editor-surface { flex: 0 0 auto; width: 100%; padding: 0; display: block; }
 
   .photo-layout {
     width: 100%;
     height: auto;
-    min-height: calc(100dvh - 77px);
+    min-height: calc(100dvh - 65px);
     max-width: none;
     max-height: none;
     flex: 0 0 auto;
@@ -352,7 +352,7 @@ button { cursor: pointer; }
     flex-direction: column;
   }
 
-  .photo-header { min-height: 20px; margin-bottom: 10.5px; }
+  .photo-header { min-height: 20px; margin-bottom: 16px; }
   .photo-header .new-photo-action,
   .photo-controls { display: none; }
 
@@ -366,7 +366,7 @@ button { cursor: pointer; }
   .tablet-panel {
     flex: 1 0 auto;
     width: 100%;
-    margin-top: 32px;
+    margin-top: 16px;
     padding-bottom: 0;
     display: flex;
     flex-direction: column;
@@ -376,7 +376,7 @@ button { cursor: pointer; }
   .tablet-setting {
     width: 100%;
     display: grid;
-    grid-template-columns: 283px minmax(0, 1fr);
+    grid-template-columns: 189px minmax(0, 1fr);
     column-gap: 16px;
     align-items: start;
   }
