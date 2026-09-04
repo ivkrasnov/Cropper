@@ -46,7 +46,7 @@ function render() {
   if (!state.image) return;
   const rect = photoViewport.getBoundingClientRect();
   if (!rect.width || !rect.height) return;
-  const desktop = window.matchMedia('(min-width: 621px)').matches;
+  const desktop = window.matchMedia('(min-width: 1025px)').matches;
   const controlGap = desktop ? parseFloat(getComputedStyle(photoLayout).getPropertyValue('--photo-control-gap')) || 16 : 0;
   const verticalControls = desktop ? photoHeader.offsetHeight + photoControls.offsetHeight + controlGap * 2 : 0;
   const availableHeight = Math.max(1, rect.height - verticalControls);
@@ -116,7 +116,8 @@ $('#fileInput').addEventListener('change', (e) => loadFile(e.target.files[0]));
 ['dragenter','dragover'].forEach((name) => $('#dropzone').addEventListener(name, (e) => { e.preventDefault(); $('#dropzone').classList.add('dragging'); }));
 ['dragleave','drop'].forEach((name) => $('#dropzone').addEventListener(name, (e) => { e.preventDefault(); $('#dropzone').classList.remove('dragging'); }));
 $('#dropzone').addEventListener('drop', (e) => loadFile(e.dataTransfer.files[0]));
-$('#newPhoto').addEventListener('click', () => { $('#fileInput').value = ''; $('#fileInput').click(); });
+function requestNewPhoto() { $('#fileInput').value = ''; $('#fileInput').click(); }
+['#newPhoto', '#tabletNewPhoto'].forEach((selector) => $(selector).addEventListener('click', requestNewPhoto));
 function setMenuOpen(toggle, menu, open) {
   toggle.setAttribute('aria-expanded', String(open));
   menu.hidden = !open;
@@ -136,16 +137,14 @@ function toggleMenu(toggle, menu) {
 
 $('#ratioMenuToggle').addEventListener('click', () => toggleMenu($('#ratioMenuToggle'), $('#ratioGrid')));
 $('#sizeMenuToggle').addEventListener('click', () => toggleMenu($('#sizeMenuToggle'), $('#sizeMenu')));
-$('#ratioGrid').addEventListener('click', (e) => {
-  const button = e.target.closest('button');
-  if (!button) return;
+$$('.ratio').forEach((button) => button.addEventListener('click', () => {
   state.ratio = button.dataset.ratio;
-  $$('.ratio').forEach((item) => item.classList.toggle('active', item === button));
-  $('#ratioValue').textContent = button.textContent.trim();
+  $$('.ratio').forEach((item) => item.classList.toggle('active', item.dataset.ratio === state.ratio));
+  $('#ratioValue').textContent = button.dataset.label || button.textContent.trim();
   setMenuOpen($('#ratioMenuToggle'), $('#ratioGrid'), false);
   applyRatio(state.crop.x + state.crop.w / 2, state.crop.y + state.crop.h / 2);
   updateCropUI();
-});
+}));
 function $$(s) { return document.querySelectorAll(s); }
 $('#resetCrop').addEventListener('click', resetCrop);
 $('#cropTab').addEventListener('click', () => { $('#cropTab').classList.add('active'); $('#editTab').classList.remove('active'); $('#cropControls').hidden = false; $('#editControls').hidden = true; });
@@ -180,11 +179,12 @@ $('.levels-range').addEventListener('input', () => { state.adjustments.black = +
 $('#resetAdjustments').addEventListener('click', () => { state.adjustments = { ...defaults }; adjustments.forEach(([key]) => { $(`#${key}`).value=0; $(`#${key}Value`).textContent='0'; }); $('#blackPoint').value=0;$('#gamma').value=100;$('#whitePoint').value=255;$('#levelsValue').textContent='0 · 1,00 · 255';render(); });
 $$('.size').forEach((button) => button.addEventListener('click', () => {
   state.outputSize = +button.dataset.size;
-  $$('.size').forEach((item) => item.classList.toggle('active', item === button));
-  $('#sizeValue').textContent = `${button.childNodes[0].textContent.trim()} • ${button.dataset.size} px`;
+  $$('.size').forEach((item) => item.classList.toggle('active', +item.dataset.size === state.outputSize));
+  $('#sizeValue').textContent = `${button.dataset.tier} • ${button.dataset.size} px`;
   setMenuOpen($('#sizeMenuToggle'), $('#sizeMenu'), false);
 }));
-$('#download').addEventListener('click', () => { if (!state.image) return; const s = sourceRect(), ratio = s.w / s.h; let w = state.outputSize, h = Math.round(w / ratio); if (h > state.outputSize) { h = state.outputSize; w = Math.round(h * ratio); } const out = document.createElement('canvas'); out.width=w;out.height=h;drawImage(out.getContext('2d',{willReadFrequently:true}),w,h); out.toBlob((blob) => { const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${state.fileName}-${state.outputSize}.jpg`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);setToast('JPEG готов к скачиванию'); },'image/jpeg',.92); });
+function downloadPhoto() { if (!state.image) return; const s = sourceRect(), ratio = s.w / s.h; let w = state.outputSize, h = Math.round(w / ratio); if (h > state.outputSize) { h = state.outputSize; w = Math.round(h * ratio); } const out = document.createElement('canvas'); out.width=w;out.height=h;drawImage(out.getContext('2d',{willReadFrequently:true}),w,h); out.toBlob((blob) => { const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${state.fileName}-${state.outputSize}.jpg`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);setToast('JPEG готов к скачиванию'); },'image/jpeg',.92); }
+['#download', '#tabletDownload'].forEach((selector) => $(selector).addEventListener('click', downloadPhoto));
 document.addEventListener('click', (event) => {
   if (!event.target.closest('.select-control')) closeMenus();
 });

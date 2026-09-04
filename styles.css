@@ -188,7 +188,7 @@ button { cursor: pointer; }
   justify-content: space-between;
 }
 
-@media (min-width: 621px) {
+@media (min-width: 1025px) {
   .photo-header,
   .photo-controls {
     position: absolute;
@@ -288,6 +288,8 @@ button { cursor: pointer; }
 .toolbar-action:hover img,
 .toolbar-action:focus-visible img { filter: brightness(0); }
 
+.tablet-panel { display: none; }
+
 #toast {
   position: fixed;
   z-index: var(--z-toast);
@@ -328,6 +330,112 @@ button { cursor: pointer; }
   .editor-surface { padding-right: clamp(20px, 4vw, 40px); padding-left: clamp(20px, 4vw, 40px); }
 }
 
+@media (min-width: 621px) and (max-width: 1024px) {
+  :root {
+    --screen-x: 16px;
+    --screen-y: 40px;
+  }
+
+  .app-shell { padding-bottom: 16px; }
+  .topbar { min-height: 29px; }
+  .editor-view { flex: 0 0 auto; padding-top: 8px; }
+  .editor-surface { flex: 0 0 auto; width: 100%; padding: 0; display: block; }
+
+  .photo-layout {
+    width: 100%;
+    height: auto;
+    max-width: none;
+    max-height: none;
+    flex: 0 0 auto;
+  }
+
+  .photo-header { min-height: 20px; margin-bottom: 16px; }
+  .photo-header .new-photo-action,
+  .photo-controls { display: none; }
+
+  .photo-viewport {
+    flex: 0 0 auto;
+    width: 100%;
+    height: min(536px, calc((100vw - 32px) * .666667));
+    min-height: 0;
+  }
+
+  .tablet-panel {
+    width: 100%;
+    margin-top: 86px;
+    display: block;
+  }
+
+  .tablet-setting {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 272px minmax(0, 1fr);
+    column-gap: 16px;
+    align-items: start;
+  }
+
+  .tablet-setting-label {
+    margin: 0;
+    color: var(--ink);
+    font: 500 14px/20px var(--font);
+  }
+
+  .tablet-ratio-grid,
+  .tablet-size-grid {
+    display: grid;
+    gap: 16px;
+  }
+
+  .tablet-ratio-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .tablet-size-setting { margin-top: 36px; }
+  .tablet-size-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .tablet-option {
+    min-width: 0;
+    min-height: 60px;
+    padding: 20px 12px;
+    border: 0;
+    background: #f3f3f2;
+    color: var(--quiet);
+    font: 500 14px/20px var(--font);
+    text-align: center;
+    white-space: nowrap;
+    transition: color 180ms ease, background-color 180ms ease;
+  }
+
+  .tablet-option.active { background: #e2e2df; color: var(--ink); }
+  .tablet-option:hover { color: var(--ink); }
+  .tablet-option:focus-visible,
+  .tablet-action:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+  .tablet-actions {
+    width: 100%;
+    height: 120px;
+    margin-top: 91px;
+    display: flex;
+    gap: 16px;
+  }
+
+  .tablet-action {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 20px 24px;
+    border: 0;
+    background: #f3f3f2;
+    color: var(--quiet);
+    font: 500 14px/20px var(--font);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: color 180ms ease, background-color 180ms ease;
+  }
+
+  .tablet-action img { width: 20px; height: 20px; }
+  .tablet-download { background: #e2e2df; color: var(--ink); }
+  .tablet-action:hover { color: var(--ink); }
+}
+
 @media (max-width: 620px) {
   :root { --screen-x: 5vw; --screen-y: 4vh; }
   .editor-view { padding-top: 24px; }
@@ -342,7 +450,7 @@ button { cursor: pointer; }
   .photo-actions { gap: 12px; }
 }
 
-@media (max-height: 720px) and (min-width: 621px) {
+@media (max-height: 720px) and (min-width: 1025px) {
   :root { --screen-y: 3vh; }
   .editor-view { padding-top: 18px; }
   .editor-surface { padding-top: 9px; padding-bottom: 8px; }
