@@ -2,6 +2,9 @@ const $ = (selector) => document.querySelector(selector);
 const canvas = $('#previewCanvas');
 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 const stage = $('#canvasStage');
+const photoLayout = $('.photo-layout');
+const photoHeader = $('.photo-header');
+const photoControls = $('.photo-controls');
 const photoViewport = $('#photoViewport');
 const cropBox = $('#cropBox');
 const shade = $('#cropShade');
@@ -43,10 +46,20 @@ function render() {
   if (!state.image) return;
   const rect = photoViewport.getBoundingClientRect();
   if (!rect.width || !rect.height) return;
+  const desktop = window.matchMedia('(min-width: 621px)').matches;
+  const controlGap = desktop ? parseFloat(getComputedStyle(photoLayout).getPropertyValue('--photo-control-gap')) || 16 : 0;
+  const verticalControls = desktop ? photoHeader.offsetHeight + photoControls.offsetHeight + controlGap * 2 : 0;
+  const availableHeight = Math.max(1, rect.height - verticalControls);
   const aspect = state.image.naturalWidth / state.image.naturalHeight;
-  let w = Math.min(rect.width, rect.height * aspect), h = w / aspect; if (h > rect.height) { h = rect.height; w = h * aspect; }
+  let w = Math.min(rect.width, availableHeight * aspect), h = w / aspect; if (h > availableHeight) { h = availableHeight; w = h * aspect; }
   Object.assign(stage.style, { width: `${w}px`, height: `${h}px` });
   $$('.photo-aligned').forEach((element) => { element.style.width = `${w}px`; });
+  if (desktop) {
+    const layoutRect = photoLayout.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    photoLayout.style.setProperty('--photo-stage-top', `${stageRect.top - layoutRect.top}px`);
+    photoLayout.style.setProperty('--photo-stage-bottom', `${stageRect.bottom - layoutRect.top}px`);
+  }
   const scale = Math.min(1, 1600 / Math.max(state.image.naturalWidth, state.image.naturalHeight));
   canvas.width = Math.max(1, Math.round(state.image.naturalWidth * scale)); canvas.height = Math.max(1, Math.round(state.image.naturalHeight * scale));
   drawImage(ctx, canvas.width, canvas.height, false); updateCropUI();

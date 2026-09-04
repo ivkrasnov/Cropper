@@ -105,6 +105,8 @@ button { cursor: pointer; }
 }
 
 .photo-layout {
+  --photo-control-gap: 16px;
+  position: relative;
   flex: 1 1 1068px;
   width: min(100%, 1068px);
   height: min(100%, 821px);
@@ -184,6 +186,20 @@ button { cursor: pointer; }
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+@media (min-width: 621px) {
+  .photo-header,
+  .photo-controls {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    margin: 0;
+    transform: translateX(-50%);
+  }
+
+  .photo-header { top: calc(var(--photo-stage-top, 36px) - 20px - var(--photo-control-gap)); }
+  .photo-controls { top: calc(var(--photo-stage-bottom, calc(100% - 36px)) + var(--photo-control-gap)); }
 }
 
 .photo-actions {
