@@ -400,6 +400,7 @@ button { cursor: pointer; }
     font: 500 14px/20px var(--font);
     text-align: center;
     white-space: nowrap;
+    justify-content: center;
     transition: color 180ms ease, background-color 180ms ease;
   }
 
