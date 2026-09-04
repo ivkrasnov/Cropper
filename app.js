@@ -44,14 +44,26 @@ function drawImage(targetCtx, outW, outH, useCrop = true) {
 }
 function render() {
   if (!state.image) return;
+  const desktop = window.matchMedia('(min-width: 1025px)').matches;
+  const tablet = window.matchMedia('(min-width: 621px) and (max-width: 1024px)').matches;
   const rect = photoViewport.getBoundingClientRect();
   if (!rect.width || !rect.height) return;
-  const desktop = window.matchMedia('(min-width: 1025px)').matches;
   const controlGap = desktop ? parseFloat(getComputedStyle(photoLayout).getPropertyValue('--photo-control-gap')) || 16 : 0;
   const verticalControls = desktop ? photoHeader.offsetHeight + photoControls.offsetHeight + controlGap * 2 : 0;
   const availableHeight = Math.max(1, rect.height - verticalControls);
   const aspect = state.image.naturalWidth / state.image.naturalHeight;
-  let w = Math.min(rect.width, availableHeight * aspect), h = w / aspect; if (h > availableHeight) { h = availableHeight; w = h * aspect; }
+  let w;
+  let h;
+  if (tablet) {
+    w = rect.width;
+    h = w / aspect;
+    photoLayout.style.setProperty('--tablet-photo-height', `${h}px`);
+  } else {
+    photoLayout.style.removeProperty('--tablet-photo-height');
+    w = Math.min(rect.width, availableHeight * aspect);
+    h = w / aspect;
+    if (h > availableHeight) { h = availableHeight; w = h * aspect; }
+  }
   Object.assign(stage.style, { width: `${w}px`, height: `${h}px` });
   $$('.photo-aligned').forEach((element) => { element.style.width = `${w}px`; });
   if (desktop) {
