@@ -92,7 +92,7 @@ async function loadFile(file) {
     const firstPhoto = $('#editorView').hidden;
     state.image = img;
     state.fileName = file.name.replace(/\.[^/.]+$/, '') || 'cropper';
-    $('#imageMeta').textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+    $('#imageMeta').textContent = `${img.naturalWidth} x ${img.naturalHeight} px`;
     resetCrop();
     if (firstPhoto) revealEditor(); else requestAnimationFrame(render);
     URL.revokeObjectURL(url);

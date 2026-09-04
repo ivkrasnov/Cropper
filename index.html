@@ -14,7 +14,6 @@
     <main class="app-shell">
       <header class="topbar">
         <a class="brand" href="./" aria-label="Cropper — на главную"><span class="brand-mark">✣</span>Cropper</a>
-        <p class="tagline">let’s crop</p>
       </header>
 
       <section id="uploadView" class="upload-view">
@@ -29,7 +28,13 @@
       <section id="editorView" class="editor-view" hidden>
         <div class="editor-surface">
           <div class="photo-layout">
-            <div id="imageMeta" class="image-meta photo-aligned"></div>
+            <div class="photo-header photo-aligned">
+              <div id="imageMeta" class="image-meta"></div>
+              <button id="newPhoto" class="toolbar-action new-photo-action" type="button" aria-label="Загрузить новую фотографию">
+                <span>Новое фото</span>
+                <img src="./assets/add-photo.svg" alt="" />
+              </button>
+            </div>
 
             <div id="photoViewport" class="photo-viewport">
               <div class="canvas-stage" id="canvasStage">
@@ -48,46 +53,43 @@
             <div class="photo-controls photo-aligned">
               <div class="select-control" id="ratioSelect">
                 <button id="ratioMenuToggle" class="select-trigger" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="ratioGrid">
-                  <span id="ratioValue">16 × 9</span>
+                  <span id="ratioValue">16 x 9</span>
                   <img src="./assets/arrow-down.svg" alt="" />
                 </button>
                 <div class="select-menu" id="ratioGrid" role="menu" hidden>
                   <button class="ratio" data-ratio="free" type="button" role="menuitem">Свободно</button>
-                  <button class="ratio" data-ratio="1" type="button" role="menuitem">1 × 1</button>
-                  <button class="ratio" data-ratio="4:5" type="button" role="menuitem">4 × 5</button>
-                  <button class="ratio" data-ratio="5:4" type="button" role="menuitem">5 × 4</button>
-                  <button class="ratio" data-ratio="3:4" type="button" role="menuitem">3 × 4</button>
-                  <button class="ratio" data-ratio="4:3" type="button" role="menuitem">4 × 3</button>
-                  <button class="ratio" data-ratio="3:2" type="button" role="menuitem">3 × 2</button>
-                  <button class="ratio" data-ratio="2:3" type="button" role="menuitem">2 × 3</button>
-                  <button class="ratio active" data-ratio="16:9" type="button" role="menuitem">16 × 9</button>
-                  <button class="ratio" data-ratio="9:16" type="button" role="menuitem">9 × 16</button>
+                  <button class="ratio" data-ratio="1" type="button" role="menuitem">1 x 1</button>
+                  <button class="ratio" data-ratio="4:5" type="button" role="menuitem">4 x 5</button>
+                  <button class="ratio" data-ratio="5:4" type="button" role="menuitem">5 x 4</button>
+                  <button class="ratio" data-ratio="3:4" type="button" role="menuitem">3 x 4</button>
+                  <button class="ratio" data-ratio="4:3" type="button" role="menuitem">4 x 3</button>
+                  <button class="ratio" data-ratio="3:2" type="button" role="menuitem">3 x 2</button>
+                  <button class="ratio" data-ratio="2:3" type="button" role="menuitem">2 x 3</button>
+                  <button class="ratio active" data-ratio="16:9" type="button" role="menuitem">16 x 9</button>
+                  <button class="ratio" data-ratio="9:16" type="button" role="menuitem">9 x 16</button>
                 </div>
               </div>
 
-              <div class="select-control size-control" id="sizeSelect">
-                <button id="sizeMenuToggle" class="select-trigger" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="sizeMenu">
-                  <span id="sizeValue">M • 1400 px</span>
-                  <img src="./assets/arrow-down.svg" alt="" />
-                </button>
-                <div class="select-menu" id="sizeMenu" role="menu" hidden>
-                  <button class="size" type="button" data-size="1000" role="menuitem">S <small>1000 px</small></button>
-                  <button class="size active" type="button" data-size="1400" role="menuitem">M <small>1400 px</small></button>
-                  <button class="size" type="button" data-size="2500" role="menuitem">L <small>2500 px</small></button>
+              <div class="photo-actions">
+                <div class="select-control size-control" id="sizeSelect">
+                  <button id="sizeMenuToggle" class="select-trigger" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="sizeMenu">
+                    <span id="sizeValue">M • 1400 px</span>
+                    <img src="./assets/arrow-down.svg" alt="" />
+                  </button>
+                  <div class="select-menu" id="sizeMenu" role="menu" hidden>
+                    <button class="size" type="button" data-size="1000" role="menuitem">S <small>1000 px</small></button>
+                    <button class="size active" type="button" data-size="1400" role="menuitem">M <small>1400 px</small></button>
+                    <button class="size" type="button" data-size="2500" role="menuitem">L <small>2500 px</small></button>
+                  </div>
                 </div>
+
+                <button id="download" class="toolbar-action download-action" type="button">
+                  <span>Скачать</span>
+                  <img src="./assets/download.svg" alt="" />
+                </button>
               </div>
             </div>
-
-            <button id="download" class="download-button" type="button">Скачать фото</button>
           </div>
-
-          <button id="newPhoto" class="new-photo-button" type="button" aria-label="Загрузить новую фотографию">
-            <span class="new-photo-icons" aria-hidden="true">
-              <img class="new-photo-icon-default" src="./assets/new-photo.svg" alt="" />
-              <img class="new-photo-icon-hover" src="./assets/new-photo-hover.svg" alt="" />
-            </span>
-            <span class="new-photo-label">Новое<br />фото</span>
-          </button>
         </div>
 
         <div class="legacy-controls" hidden>

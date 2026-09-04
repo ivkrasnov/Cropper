@@ -37,6 +37,7 @@ button { cursor: pointer; }
   min-height: 30px;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .brand {
@@ -51,7 +52,6 @@ button { cursor: pointer; }
 }
 
 .brand-mark { display: inline-block; font-size: 24px; transform: rotate(-18deg); }
-.tagline { margin: 0 0 0 auto; font-size: 13px; letter-spacing: -.04em; }
 
 .upload-view {
   flex: 1 1 0;
@@ -87,7 +87,7 @@ button { cursor: pointer; }
 .editor-view {
   flex: 1 1 0;
   min-height: 0;
-  padding-top: clamp(28px, 3vh, 34px);
+  padding-top: 24px;
   display: flex;
   view-transition-name: cropper-workspace;
 }
@@ -107,7 +107,9 @@ button { cursor: pointer; }
 .photo-layout {
   flex: 1 1 1068px;
   width: min(100%, 1068px);
+  height: min(100%, 821px);
   max-width: 1068px;
+  max-height: 821px;
   min-width: 0;
   min-height: 0;
   display: flex;
@@ -115,11 +117,17 @@ button { cursor: pointer; }
   align-items: center;
 }
 
-.image-meta {
+.photo-header {
   flex: 0 0 auto;
   width: 100%;
   min-height: 20px;
   margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.image-meta {
   color: var(--quiet);
   font: 500 14px/20px var(--font);
   font-variant-numeric: tabular-nums;
@@ -170,19 +178,25 @@ button { cursor: pointer; }
 .handle-sw { left: -5px; bottom: -5px; cursor: nesw-resize; }
 
 .photo-controls {
-  flex: 0 0 34px;
+  flex: 0 0 20px;
   width: 100%;
   margin-top: 10px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
+}
+
+.photo-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
 .select-control { position: relative; }
 .select-trigger {
-  min-width: 88px;
-  min-height: 26px;
-  padding: 1px 0;
+  min-width: 0;
+  min-height: 20px;
+  padding: 0;
   border: 0;
   background: transparent;
   color: var(--quiet);
@@ -190,17 +204,15 @@ button { cursor: pointer; }
   font-variant-numeric: tabular-nums;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: flex-start;
+  gap: 4px;
 }
 
-.size-control .select-trigger { min-width: 132px; }
 .select-trigger img { width: 20px; height: 20px; transition: transform 180ms var(--ease-out); }
 .select-trigger[aria-expanded="true"] img { transform: rotate(180deg); }
 .select-trigger:hover { color: var(--ink); }
 .select-trigger:focus-visible,
-.download-button:focus-visible,
-.new-photo-button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.toolbar-action:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
 .select-menu {
   position: absolute;
@@ -237,51 +249,22 @@ button { cursor: pointer; }
 .size.active { color: var(--ink); font-weight: 500; }
 .size small { color: var(--quiet); font-size: 11px; }
 
-.download-button {
-  flex: 0 0 auto;
-  min-width: 280px;
-  min-height: 58px;
-  margin-top: 3px;
-  padding: 18px 34px;
-  border: 0;
-  border-radius: 16px;
-  background: var(--button);
-  color: var(--muted);
-  font: 500 14px/20px var(--font);
-  text-transform: uppercase;
-  transition: color 180ms ease, background-color 180ms ease, transform 180ms var(--ease-out);
-}
-
-.download-button:hover { background: #dfded7; color: var(--ink); transform: translateY(-1px); }
-.download-button:active { transform: translateY(0); }
-
-.new-photo-button {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  width: 58px;
-  min-height: 76px;
-  padding: 0 5px;
+.toolbar-action {
+  min-height: 20px;
+  padding: 0;
   border: 0;
   background: transparent;
-  color: var(--ink);
-  transform: translateY(-50%);
+  color: var(--quiet);
+  font: 500 14px/20px var(--font);
+  white-space: nowrap;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  gap: 4px;
+  transition: color 180ms ease;
 }
 
-.new-photo-icons { position: relative; display: block; width: 48px; height: 48px; }
-.new-photo-icons img { position: absolute; inset: 0; width: 48px; height: 48px; transition: opacity 160ms ease; }
-.new-photo-icon-hover { opacity: 0; }
-.new-photo-label { margin-top: 4px; opacity: 0; font: 500 14px/16px var(--font); text-align: center; transition: opacity 160ms ease, transform 180ms var(--ease-out); transform: translateY(-3px); }
-.new-photo-button:hover .new-photo-icon-default,
-.new-photo-button:focus-visible .new-photo-icon-default { opacity: 0; }
-.new-photo-button:hover .new-photo-icon-hover,
-.new-photo-button:focus-visible .new-photo-icon-hover,
-.new-photo-button:hover .new-photo-label,
-.new-photo-button:focus-visible .new-photo-label { opacity: 1; transform: translateY(0); }
+.toolbar-action img { width: 20px; height: 20px; }
+.toolbar-action:hover { color: var(--ink); }
 
 #toast {
   position: fixed;
@@ -320,26 +303,21 @@ button { cursor: pointer; }
 .editor-view.fallback-enter { animation: editor-in 250ms var(--ease-out) both; }
 
 @media (max-width: 900px) {
-  .editor-surface { padding-right: clamp(54px, 8vw, 72px); padding-left: clamp(20px, 4vw, 40px); }
-  .new-photo-button { right: 8px; }
-  .new-photo-label { font-size: 12px; line-height: 14px; }
+  .editor-surface { padding-right: clamp(20px, 4vw, 40px); padding-left: clamp(20px, 4vw, 40px); }
 }
 
 @media (max-width: 620px) {
   :root { --screen-x: 5vw; --screen-y: 4vh; }
-  .tagline { font-size: 12px; }
   .editor-view { padding-top: 24px; }
   .editor-surface { padding: 12px 12px 10px; }
-  .photo-layout { padding-bottom: 72px; }
   .photo-viewport { min-height: 240px; }
-  .image-meta { font-size: 11px; }
-  .photo-controls { flex-basis: 30px; }
-  .select-trigger { min-width: 80px; font-size: 11px; gap: 6px; }
-  .size-control .select-trigger { min-width: 112px; }
-  .download-button { min-width: 210px; min-height: 50px; padding: 14px 24px; font-size: 12px; }
-  .new-photo-button { top: auto; right: 12px; bottom: 12px; width: auto; min-height: 48px; padding: 0; transform: none; flex-direction: row; gap: 8px; }
-  .new-photo-icons, .new-photo-icons img { width: 40px; height: 40px; }
-  .new-photo-label { margin: 0; opacity: 1; transform: none; font-size: 11px; line-height: 13px; text-align: left; }
+}
+
+@media (max-width: 359px) {
+  .image-meta,
+  .select-trigger,
+  .toolbar-action { font-size: 11px; }
+  .photo-actions { gap: 12px; }
 }
 
 @media (max-height: 720px) and (min-width: 621px) {
@@ -349,7 +327,7 @@ button { cursor: pointer; }
   .image-meta { min-height: 18px; margin-bottom: 2px; font-size: 11px; }
   .photo-controls { flex-basis: 28px; margin-top: 6px; }
   .select-trigger { font-size: 11px; }
-  .download-button { min-height: 44px; margin-top: 0; padding: 10px 28px; font-size: 12px; }
+  .toolbar-action { font-size: 11px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
