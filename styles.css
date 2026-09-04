@@ -336,7 +336,7 @@ button { cursor: pointer; }
     --screen-y: 40px;
   }
 
-  .app-shell { padding-bottom: 16px; }
+  .app-shell { padding-bottom: 0; }
   .topbar { min-height: 29px; }
   .editor-view { flex: 0 0 auto; padding-top: 8px; }
   .editor-surface { flex: 0 0 auto; width: 100%; padding: 0; display: block; }
@@ -344,9 +344,12 @@ button { cursor: pointer; }
   .photo-layout {
     width: 100%;
     height: auto;
+    min-height: calc(100dvh - 77px);
     max-width: none;
     max-height: none;
     flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
   }
 
   .photo-header { min-height: 20px; margin-bottom: 10.5px; }
@@ -361,18 +364,19 @@ button { cursor: pointer; }
   }
 
   .tablet-panel {
+    flex: 1 0 auto;
     width: 100%;
-    margin-top: 36px;
-    padding-bottom: 268px;
+    margin-top: 32px;
+    padding-bottom: 0;
     display: flex;
     flex-direction: column;
-    gap: 36px;
+    gap: 0;
   }
 
   .tablet-setting {
     width: 100%;
     display: grid;
-    grid-template-columns: minmax(160px, 1fr) minmax(0, 514px);
+    grid-template-columns: 283px minmax(0, 1fr);
     column-gap: 16px;
     align-items: start;
   }
@@ -390,7 +394,7 @@ button { cursor: pointer; }
   }
 
   .tablet-ratio-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .tablet-size-setting { margin-top: 0; }
+  .tablet-size-setting { margin-top: 16px; }
   .tablet-size-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
   .tablet-option {
@@ -413,14 +417,10 @@ button { cursor: pointer; }
   .tablet-action:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
   .tablet-actions {
-    position: fixed;
-    z-index: var(--z-dropdown);
-    right: 0;
-    bottom: 0;
-    left: 0;
+    position: relative;
     width: auto;
     height: 152px;
-    margin-top: 0;
+    margin: auto -16px 0;
     padding: 16px;
     background: rgba(255, 255, 255, .5);
     display: flex;
