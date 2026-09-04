@@ -537,7 +537,7 @@ button { cursor: pointer; }
   .mobile-setting-label {
     margin: 0;
     color: var(--ink);
-    font: 500 14px/20px var(--font);
+    font: 500 12px/20px var(--font);
   }
 
   .mobile-ratio-grid,
@@ -560,7 +560,7 @@ button { cursor: pointer; }
     border: 0;
     background: #f3f3f2;
     color: var(--quiet);
-    font: 500 14px/20px var(--font);
+    font: 500 12px/20px var(--font);
     text-align: center;
     white-space: nowrap;
     justify-content: center;
@@ -577,7 +577,7 @@ button { cursor: pointer; }
     border: 0;
     background: #f3f3f2;
     color: var(--ink);
-    font: 500 14px/20px var(--font);
+    font: 500 12px/20px var(--font);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -594,11 +594,6 @@ button { cursor: pointer; }
   .mobile-action:active { background: #d7d7d3; }
   .mobile-option:focus-visible,
   .mobile-action:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
-}
-
-@media (max-width: 359px) {
-  .mobile-option,
-  .mobile-action { font-size: 12px; }
 }
 
 @media (max-height: 720px) and (min-width: 1025px) {
