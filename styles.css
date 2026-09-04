@@ -3,13 +3,13 @@
   --white: #ffffff;
   --ink: #000000;
   --muted: #6b6b61;
-  --quiet: #9e9e94;
+  --quiet: #717165;
   --line: #d2d2c6;
   --button: #e9e8e2;
   --crop-overlay: rgba(255, 255, 255, .8);
   --screen-x: 5vw;
   --screen-y: 5vh;
-  --font: "Inter", Arial, sans-serif;
+  --font: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   --ease-out: cubic-bezier(.22, 1, .36, 1);
   --z-dropdown: 20;
   --z-crop: 10;
@@ -19,7 +19,7 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { min-width: 320px; min-height: 100%; font-family: var(--font); }
-body { margin: 0; background: var(--white); color: var(--ink); font-family: var(--font); }
+body { margin: 0; background: var(--white); color: var(--ink); font-family: var(--font); font-weight: 500; }
 button, input { font: inherit; }
 button { cursor: pointer; }
 
@@ -48,8 +48,8 @@ button { cursor: pointer; }
   color: var(--ink);
   text-decoration: none;
   font-size: 21px;
-  font-weight: 700;
-  letter-spacing: -1px;
+  font-weight: 500;
+  letter-spacing: -.04em;
   display: flex;
   gap: 6px;
   align-items: center;
@@ -85,7 +85,7 @@ button { cursor: pointer; }
 .dropzone:focus-within { outline: 2px solid var(--ink); outline-offset: 3px; }
 .dropzone input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .upload-icon { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--ink); margin-bottom: 3px; font-size: 19px; }
-.dropzone strong { color: var(--ink); font-size: 13px; font-weight: 600; }
+.dropzone strong { color: var(--ink); font-size: 13px; font-weight: 500; }
 .dropzone span:last-child { font: 500 10px var(--font); }
 
 .editor-view {
