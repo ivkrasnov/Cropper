@@ -363,6 +363,7 @@ button { cursor: pointer; }
   .tablet-panel {
     width: 100%;
     margin-top: 86px;
+    padding-bottom: 211px;
     display: block;
   }
 
@@ -410,9 +411,15 @@ button { cursor: pointer; }
   .tablet-action:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
   .tablet-actions {
-    width: 100%;
+    position: fixed;
+    z-index: var(--z-dropdown);
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    width: auto;
     height: 120px;
-    margin-top: 91px;
+    margin-top: 0;
+    background: var(--white);
     display: flex;
     gap: 16px;
   }
