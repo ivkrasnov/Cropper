@@ -423,7 +423,7 @@ button { cursor: pointer; }
     padding: 20px 24px;
     border: 0;
     background: #f3f3f2;
-    color: var(--quiet);
+    color: var(--ink);
     font: 500 14px/20px var(--font);
     display: flex;
     align-items: center;
@@ -432,9 +432,14 @@ button { cursor: pointer; }
     transition: color 180ms ease, background-color 180ms ease;
   }
 
-  .tablet-action img { width: 20px; height: 20px; }
-  .tablet-download { background: #e2e2df; color: var(--ink); }
-  .tablet-action:hover { color: var(--ink); }
+  .tablet-action img {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0);
+  }
+
+  .tablet-action:hover { background: #e2e2df; }
+  .tablet-action:active { background: #d7d7d3; }
 }
 
 @media (max-width: 620px) {
