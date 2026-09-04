@@ -46,6 +46,7 @@ function render() {
   if (!state.image) return;
   const desktop = window.matchMedia('(min-width: 1025px)').matches;
   const tablet = window.matchMedia('(min-width: 621px) and (max-width: 1024px)').matches;
+  const mobile = window.matchMedia('(max-width: 620px)').matches;
   const rect = photoViewport.getBoundingClientRect();
   if (!rect.width || !rect.height) return;
   const controlGap = desktop ? parseFloat(getComputedStyle(photoLayout).getPropertyValue('--photo-control-gap')) || 16 : 0;
@@ -54,12 +55,13 @@ function render() {
   const aspect = state.image.naturalWidth / state.image.naturalHeight;
   let w;
   let h;
-  if (tablet) {
+  photoLayout.style.removeProperty('--tablet-photo-height');
+  photoLayout.style.removeProperty('--mobile-photo-height');
+  if (tablet || mobile) {
     w = rect.width;
     h = w / aspect;
-    photoLayout.style.setProperty('--tablet-photo-height', `${h}px`);
+    photoLayout.style.setProperty(tablet ? '--tablet-photo-height' : '--mobile-photo-height', `${h}px`);
   } else {
-    photoLayout.style.removeProperty('--tablet-photo-height');
     w = Math.min(rect.width, availableHeight * aspect);
     h = w / aspect;
     if (h > availableHeight) { h = availableHeight; w = h * aspect; }
@@ -130,7 +132,7 @@ $('#fileInput').addEventListener('change', (e) => loadFile(e.target.files[0]));
 ['dragleave','drop'].forEach((name) => $('#dropzone').addEventListener(name, (e) => { e.preventDefault(); $('#dropzone').classList.remove('dragging'); }));
 $('#dropzone').addEventListener('drop', (e) => loadFile(e.dataTransfer.files[0]));
 function requestNewPhoto() { $('#fileInput').value = ''; $('#fileInput').click(); }
-['#newPhoto', '#tabletNewPhoto'].forEach((selector) => $(selector).addEventListener('click', requestNewPhoto));
+['#newPhoto', '#tabletNewPhoto', '#mobileNewPhoto'].forEach((selector) => $(selector).addEventListener('click', requestNewPhoto));
 function setMenuOpen(toggle, menu, open) {
   toggle.setAttribute('aria-expanded', String(open));
   menu.hidden = !open;
@@ -197,7 +199,7 @@ $$('.size').forEach((button) => button.addEventListener('click', () => {
   setMenuOpen($('#sizeMenuToggle'), $('#sizeMenu'), false);
 }));
 function downloadPhoto() { if (!state.image) return; const s = sourceRect(), ratio = s.w / s.h; let w = state.outputSize, h = Math.round(w / ratio); if (h > state.outputSize) { h = state.outputSize; w = Math.round(h * ratio); } const out = document.createElement('canvas'); out.width=w;out.height=h;drawImage(out.getContext('2d',{willReadFrequently:true}),w,h); out.toBlob((blob) => { const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`${state.fileName}-${state.outputSize}.jpg`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);setToast('JPEG готов к скачиванию'); },'image/jpeg',.92); }
-['#download', '#tabletDownload'].forEach((selector) => $(selector).addEventListener('click', downloadPhoto));
+['#download', '#tabletDownload', '#mobileDownload'].forEach((selector) => $(selector).addEventListener('click', downloadPhoto));
 document.addEventListener('click', (event) => {
   if (!event.target.closest('.select-control')) closeMenus();
 });

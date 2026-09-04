@@ -127,6 +127,47 @@
                 </button>
               </div>
             </section>
+
+            <section class="mobile-panel" aria-label="Настройки кадрирования и экспорта">
+              <div class="mobile-setting">
+                <p class="mobile-setting-label">Соотношение сторон</p>
+                <div class="mobile-ratio-grid" role="group" aria-label="Соотношение сторон">
+                  <button class="mobile-option ratio active mobile-ratio-wide" data-ratio="16:9" type="button">16 x 9</button>
+                  <button class="mobile-option ratio mobile-ratio-wide" data-ratio="free" data-label="Свободно" type="button">Свое</button>
+                  <button class="mobile-option ratio" data-ratio="9:16" type="button">9 x 16</button>
+                  <button class="mobile-option ratio" data-ratio="3:2" type="button">3 x 2</button>
+                  <button class="mobile-option ratio" data-ratio="4:3" type="button">4 x 3</button>
+                  <button class="mobile-option ratio" data-ratio="5:4" type="button">5 x 4</button>
+                  <button class="mobile-option ratio" data-ratio="1" type="button">1 x 1</button>
+                  <button class="mobile-option ratio" data-ratio="2:3" type="button">2 x 3</button>
+                  <button class="mobile-option ratio" data-ratio="3:4" type="button">3 x 4</button>
+                  <button class="mobile-option ratio" data-ratio="4:5" type="button">4 x 5</button>
+                </div>
+              </div>
+
+              <div class="mobile-setting">
+                <p class="mobile-setting-label">Размер для скачивания</p>
+                <div class="mobile-size-grid" role="group" aria-label="Размер для скачивания">
+                  <button class="mobile-option size" type="button" data-size="1000" data-tier="S">1000 px</button>
+                  <button class="mobile-option size active" type="button" data-size="1400" data-tier="M">1400 px</button>
+                  <button class="mobile-option size" type="button" data-size="2500" data-tier="L">2500 px</button>
+                </div>
+              </div>
+
+              <div class="mobile-setting">
+                <p class="mobile-setting-label">Загрузить или скачать</p>
+                <div class="mobile-actions">
+                  <button id="mobileNewPhoto" class="mobile-action" type="button">
+                    <span>Новое фото</span>
+                    <img src="./assets/add-photo.svg" alt="" />
+                  </button>
+                  <button id="mobileDownload" class="mobile-action" type="button">
+                    <span>Скачать</span>
+                    <img src="./assets/download-active.svg" alt="" />
+                  </button>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
 
