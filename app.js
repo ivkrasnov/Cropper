@@ -11,7 +11,7 @@ const shade = $('#cropShade');
 const toast = $('#toast');
 
 const defaults = { temperature: 0, tint: 0, vibrance: 0, saturation: 0, clarity: 0, dehaze: 0, black: 0, gamma: 100, white: 255 };
-const state = { image: null, fileName: 'cropper', crop: { x: .08, y: .08, w: .84, h: .84 }, ratio: '16:9', outputSize: 1400, adjustments: { ...defaults }, drag: null };
+const state = { image: null, fileName: 'cropper', crop: { x: .08, y: .08, w: .84, h: .84 }, ratio: '16:9', outputSize: 1400, adjustments: { ...defaults }, drag: null, pointers: new Map(), pinch: null };
 const adjustments = [
   ['temperature', 'Temperature', -100, 100], ['tint', 'Tint', -100, 100], ['vibrance', 'Vibrance', -100, 100],
   ['saturation', 'Saturation', -100, 100], ['clarity', 'Clarity', -100, 100], ['dehaze', 'Dehaze', -100, 100]
@@ -166,6 +166,54 @@ $('#cropTab').addEventListener('click', () => { $('#cropTab').classList.add('act
 $('#editTab').addEventListener('click', () => { $('#editTab').classList.add('active'); $('#cropTab').classList.remove('active'); $('#editControls').hidden = false; $('#cropControls').hidden = true; });
 
 function relativePoint(e) { const r = stage.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
+function mobilePinchEnabled(e) { return e.pointerType === 'touch' && window.matchMedia('(max-width: 620px)').matches; }
+function pinchMetrics() {
+  const [first, second] = [...state.pointers.values()];
+  if (!first || !second) return null;
+  return {
+    center: { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 },
+    distance: Math.hypot(second.x - first.x, second.y - first.y)
+  };
+}
+function normalizedPoint(point, bounds) {
+  return { x: clamp((point.x - bounds.x) / bounds.w, 0, 1), y: clamp((point.y - bounds.y) / bounds.h, 0, 1) };
+}
+function startPinch() {
+  const metrics = pinchMetrics();
+  if (!metrics) return;
+  const bounds = getCanvasBounds();
+  const center = normalizedPoint(metrics.center, bounds);
+  const crop = { ...state.crop };
+  state.pinch = {
+    bounds,
+    crop,
+    startDistance: Math.max(1, metrics.distance),
+    anchorX: clamp((center.x - crop.x) / crop.w, 0, 1),
+    anchorY: clamp((center.y - crop.y) / crop.h, 0, 1)
+  };
+  state.drag = null;
+}
+function updatePinch() {
+  const metrics = pinchMetrics();
+  if (!metrics || !state.pinch) return;
+  const { bounds, crop, startDistance, anchorX, anchorY } = state.pinch;
+  const center = normalizedPoint(metrics.center, bounds);
+  const minimumWidth = Math.min(1, 44 / bounds.w);
+  const minimumHeight = Math.min(1, 44 / bounds.h);
+  const minimumScale = Math.max(minimumWidth / crop.w, minimumHeight / crop.h);
+  const maximumScale = Math.min(1 / crop.w, 1 / crop.h);
+  const scale = clamp(metrics.distance / startDistance, minimumScale, maximumScale);
+  const width = crop.w * scale;
+  const height = crop.h * scale;
+  state.crop = {
+    x: clamp(center.x - anchorX * width, 0, 1 - width),
+    y: clamp(center.y - anchorY * height, 0, 1 - height),
+    w: width,
+    h: height
+  };
+  updateCropUI();
+}
 function resizeLockedCrop(handle, point, ratio, old) {
   const anchor = {
     nw: { x: old.x + old.w, y: old.y + old.h }, ne: { x: old.x, y: old.y + old.h },
@@ -185,11 +233,36 @@ function resizeLockedCrop(handle, point, ratio, old) {
   if (handle === 'se') return { x: anchor.x, y: anchor.y, w: width, h: height };
   return { x: anchor.x - width, y: anchor.y, w: width, h: height };
 }
-stage.addEventListener('pointerdown', (e) => { if (!state.image || !e.target.closest('.crop-box')) return; const p = relativePoint(e), b = getCanvasBounds(), handle = e.target.dataset.handle; state.drag = { handle, p, crop: { ...state.crop }, b }; stage.setPointerCapture(e.pointerId); });
-stage.addEventListener('pointermove', (e) => { if (!state.drag) return; const { p: start, crop: old, b, handle } = state.drag, now = relativePoint(e); const dx = (now.x - start.x) / b.w, dy = (now.y - start.y) / b.h; let c;
+stage.addEventListener('pointerdown', (e) => {
+  if (!state.image) return;
+  const point = relativePoint(e);
+  if (mobilePinchEnabled(e)) {
+    if (state.pointers.size < 2) state.pointers.set(e.pointerId, point);
+    if (state.pointers.has(e.pointerId)) stage.setPointerCapture(e.pointerId);
+    if (state.pointers.size === 2) startPinch();
+    if (state.pinch || !e.target.closest('.crop-box')) return;
+  } else if (!e.target.closest('.crop-box')) return;
+  const b = getCanvasBounds(), handle = e.target.dataset.handle;
+  state.drag = { pointerId: e.pointerId, handle, p: point, crop: { ...state.crop }, b };
+  stage.setPointerCapture(e.pointerId);
+});
+stage.addEventListener('pointermove', (e) => {
+  if (mobilePinchEnabled(e) && state.pointers.has(e.pointerId)) {
+    state.pointers.set(e.pointerId, relativePoint(e));
+    if (state.pinch) { updatePinch(); return; }
+  }
+  if (!state.drag || state.drag.pointerId !== e.pointerId) return;
+  const { p: start, crop: old, b, handle } = state.drag, now = relativePoint(e); const dx = (now.x - start.x) / b.w, dy = (now.y - start.y) / b.h; let c;
   if (!handle) c = { ...old, x: Math.max(0, Math.min(1 - old.w, old.x + dx)), y: Math.max(0, Math.min(1 - old.h, old.y + dy)) };
   else { const ratio = cropSpaceRatio(); if (ratio) c = resizeLockedCrop(handle, { x: (now.x - b.x) / b.w, y: (now.y - b.y) / b.h }, ratio, old); else { let x=old.x,y=old.y,w=old.w,h=old.h; if(handle.includes('e')) w=Math.max(.05,Math.min(1-x,old.w+dx)); if(handle.includes('s')) h=Math.max(.05,Math.min(1-y,old.h+dy)); if(handle.includes('w')) { x=Math.max(0,Math.min(old.x+old.w-.05,old.x+dx)); w=old.w+(old.x-x); } if(handle.includes('n')) { y=Math.max(0,Math.min(old.y+old.h-.05,old.y+dy)); h=old.h+(old.y-y); } c={x,y,w,h}; } } state.crop=c; updateCropUI(); });
-stage.addEventListener('pointerup', () => { state.drag = null; });
+function finishPointer(e) {
+  const wasPinching = Boolean(state.pinch);
+  state.pointers.delete(e.pointerId);
+  if (wasPinching) state.pinch = null;
+  if (wasPinching || state.drag?.pointerId === e.pointerId) state.drag = null;
+}
+stage.addEventListener('pointerup', finishPointer);
+stage.addEventListener('pointercancel', finishPointer);
 $('.levels-range').addEventListener('input', () => { state.adjustments.black = +$('#blackPoint').value; state.adjustments.gamma = +$('#gamma').value; state.adjustments.white = +$('#whitePoint').value; if (state.adjustments.white <= state.adjustments.black) $('#whitePoint').value = state.adjustments.white = Math.min(255,state.adjustments.black+1); $('#levelsValue').textContent = `${state.adjustments.black} · ${(state.adjustments.gamma/100).toFixed(2).replace('.', ',')} · ${state.adjustments.white}`; render(); });
 $('#resetAdjustments').addEventListener('click', () => { state.adjustments = { ...defaults }; adjustments.forEach(([key]) => { $(`#${key}`).value=0; $(`#${key}Value`).textContent='0'; }); $('#blackPoint').value=0;$('#gamma').value=100;$('#whitePoint').value=255;$('#levelsValue').textContent='0 · 1,00 · 255';render(); });
 $$('.size').forEach((button) => button.addEventListener('click', () => {

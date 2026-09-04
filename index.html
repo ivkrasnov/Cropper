@@ -28,25 +28,27 @@
       <section id="editorView" class="editor-view" hidden>
         <div class="editor-surface">
           <div class="photo-layout">
-            <div class="photo-header photo-aligned">
-              <div id="imageMeta" class="image-meta"></div>
-              <button id="newPhoto" class="toolbar-action new-photo-action" type="button" aria-label="Загрузить новую фотографию">
-                <span>Новое фото</span>
-                <img src="./assets/add-photo.svg" alt="" />
-              </button>
-            </div>
+            <div class="photo-block">
+              <div class="photo-header photo-aligned">
+                <div id="imageMeta" class="image-meta"></div>
+                <button id="newPhoto" class="toolbar-action new-photo-action" type="button" aria-label="Загрузить новую фотографию">
+                  <span>Новое фото</span>
+                  <img src="./assets/add-photo.svg" alt="" />
+                </button>
+              </div>
 
-            <div id="photoViewport" class="photo-viewport">
-              <div class="canvas-stage" id="canvasStage">
-                <canvas id="previewCanvas" aria-label="Предпросмотр и область кадрирования"></canvas>
-                <div id="cropBox" class="crop-box" aria-label="Область кадрирования">
-                  <span class="crop-handle handle-nw" data-handle="nw"></span>
-                  <span class="crop-handle handle-ne" data-handle="ne"></span>
-                  <span class="crop-handle handle-se" data-handle="se"></span>
-                  <span class="crop-handle handle-sw" data-handle="sw"></span>
-                  <span class="crop-guides"></span>
+              <div id="photoViewport" class="photo-viewport">
+                <div class="canvas-stage" id="canvasStage">
+                  <canvas id="previewCanvas" aria-label="Предпросмотр и область кадрирования"></canvas>
+                  <div id="cropBox" class="crop-box" aria-label="Область кадрирования">
+                    <span class="crop-handle handle-nw" data-handle="nw"></span>
+                    <span class="crop-handle handle-ne" data-handle="ne"></span>
+                    <span class="crop-handle handle-se" data-handle="se"></span>
+                    <span class="crop-handle handle-sw" data-handle="sw"></span>
+                    <span class="crop-guides"></span>
+                  </div>
+                  <div id="cropShade" class="crop-shade" aria-hidden="true"></div>
                 </div>
-                <div id="cropShade" class="crop-shade" aria-hidden="true"></div>
               </div>
             </div>
 
