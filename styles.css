@@ -32,6 +32,10 @@ button { cursor: pointer; }
   flex-direction: column;
 }
 
+.app-shell.upload-mode {
+  padding-bottom: var(--screen-x);
+}
+
 .topbar {
   flex: 0 0 auto;
   min-height: 30px;

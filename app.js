@@ -96,6 +96,7 @@ function setToast(message) { toast.textContent = message; toast.classList.add('s
 
 function revealEditor() {
   const update = () => {
+    $('.app-shell').classList.remove('upload-mode');
     $('#uploadView').hidden = true;
     $('#editorView').hidden = false;
     render();
